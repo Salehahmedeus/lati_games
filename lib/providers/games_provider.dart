@@ -4,8 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:gameslati/models/detailed_game_model.dart';
 import 'package:gameslati/models/game_model.dart';
 import 'package:gameslati/services/api.dart';
+import 'package:gameslati/providers/base_provider.dart';
 
-class GamesProvider with ChangeNotifier {
+class GamesProvider extends BaseProvider {
   bool isLoding = false;
 
   GameDetailsModel? detailedGameModel;
@@ -13,8 +14,7 @@ class GamesProvider with ChangeNotifier {
   List<GameModel> games = [];
   Api api = Api();
   fetchgames(String platfrom) async {
-    isLoding = true;
-    notifyListeners();
+    setBusy(true);
     //didnt understandet it
     games.clear();
     final response = await api
@@ -31,20 +31,18 @@ class GamesProvider with ChangeNotifier {
           List<GameModel>.from(decodedData.map((e) => GameModel.fromJson(e)))
               .toList();
 
-      isLoding = false;
-      notifyListeners();
+      setBusy(false);
     }
   }
+
   //----------------------------------------Detailed game----------------------------------------\\
   fetchGameById(String id) async {
-    isLoding = true;
+    setBusy(true);
 
     // games.clear();
 
     final response =
         await api.get("https://www.freetogame.com/api/game?id=$id");
-
-    
 
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
@@ -55,21 +53,19 @@ class GamesProvider with ChangeNotifier {
       detailedGameModel = GameDetailsModel.fromJson(decodedData);
       getgamecatagoury(detailedGameModel!.genre);
 
-      isLoding = false;
-      notifyListeners();
+      setBusy(false);
     }
   }
   //----------------------------------------Similar game----------------------------------------\\
 
   List<GameModel> simlargames = [];
   getgamecatagoury(String category) async {
-    isLoding = true;
-    notifyListeners();
+    setBusy(true);
 
     //didnt understandet it
     simlargames.clear();
-    final response = await api.get(
-        "https://www.freetogame.com/api/games?platform=$category");
+    final response = await api
+        .get("https://www.freetogame.com/api/games?platform=$category");
 
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
@@ -77,8 +73,7 @@ class GamesProvider with ChangeNotifier {
           List<GameModel>.from(decodedData.map((e) => GameModel.fromJson(e)))
               .toList();
 
-      isLoding = false;
-      notifyListeners();
+      setBusy(false);
     }
   }
 }

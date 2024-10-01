@@ -1,10 +1,14 @@
-
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gameslati/helpers/consts.dart';
+import 'package:gameslati/main.dart';
+import 'package:gameslati/providers/authetication_provider.dart';
 import 'package:gameslati/providers/darkmode_provider.dart';
 import 'package:gameslati/providers/games_provider.dart';
+import 'package:gameslati/widgets/cards/clickables/main_button.dart';
 import 'package:gameslati/widgets/cards/game_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -28,12 +32,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GamesProvider>(builder: (context, gamesConsumer, child) {
+    return Consumer<GamesProvider>(builder: (context, gamesConsumer, _) {
       return Consumer<DarkmodeProvider>(
           builder: (context, darkModeConsumer, _) {
         return Scaffold(
+          drawer: Drawer(
+            child: Column(
+              children: [
+                MainButton(
+                    label: "logout",
+                    onPressed: () {
+                      Provider.of<AutheticationProvider>(context, listen: false)
+                          .logout()
+                          .then((logedOut) {
+                        if (logedOut) {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) => const ScreenRouter()),
+                              (route) => false);
+                        }
+                      });
+                    })
+              ],
+            ),
+          ),
           appBar: AppBar(
             title: const Text("GAMER"),
+            foregroundColor: darkModeConsumer.isDark
+                ? redColor
+                : Colors.black, // Change this to your desired color
             actions: [
               Row(
                 children: [
@@ -80,16 +108,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             : GameCard(
                                 gameModel: gamesConsumer.games[index],
                                 onCardTap: (gameModel) {
-                                  print(gamesConsumer.games[index].id);
+                                  if (kDebugMode) {
+                                    print(gamesConsumer.games[index].id);
+                                  }
                                 },
                               ));
                   })),
           bottomNavigationBar: BottomNavigationBar(
             backgroundColor:
                 darkModeConsumer.isDark ? Colors.black : Colors.white,
-            selectedItemColor: darkModeConsumer.isDark
-                ? const Color.fromARGB(255, 255, 133, 133)
-                : redColor,
+            selectedItemColor:
+                darkModeConsumer.isDark ? redColor : Colors.black,
+            unselectedItemColor:
+                darkModeConsumer.isDark ? redColor : Colors.black,
             selectedLabelStyle: GoogleFonts.roboto(fontWeight: FontWeight.bold),
             unselectedLabelStyle:
                 GoogleFonts.roboto(fontWeight: FontWeight.normal, fontSize: 12),

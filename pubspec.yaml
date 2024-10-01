@@ -46,6 +46,7 @@ dependencies:
   fullscreen_image_viewer:
   url_launcher:
   firebase_core: ^3.6.0
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:

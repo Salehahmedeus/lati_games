@@ -57,15 +57,18 @@ class GameDetailsModel {
         releaseDate: DateTime.parse(json["release_date"]),
         freetogameProfileUrl: json["freetogame_profile_url"],
         minimumSystemRequirements:
-            json.containsKey("minimum_system_requirements") && 
-            !(!json['platform']
-            .toString()
-            .toUpperCase()
-            .contains("web".toUpperCase()) &&
-            !json['platform'].toString().toUpperCase().contains("windows".toUpperCase()))
-            ? MinimumSystemRequirements.fromJson(json["miminimum_system_requirementsni"])
-            : null,
-                
+            json.containsKey("minimum_system_requirements") &&
+                    !(!json['platform']
+                            .toString()
+                            .toUpperCase()
+                            .contains("web".toUpperCase()) &&
+                        !json['platform']
+                            .toString()
+                            .toUpperCase()
+                            .contains("windows".toUpperCase()))
+                ? MinimumSystemRequirements.fromJson(
+                    json["minimum_system_requirements"])
+                : null,
         screenshots: List<Screenshot>.from(
             json["screenshots"].map((x) => Screenshot.fromJson(x))),
       );
